@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 
 import Index from "./pages/Index";
+import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import RegisterAdmin from "./pages/RegisterAdmin";
 import RegisterStudent from "./pages/RegisterStudent";
@@ -40,7 +41,8 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<Landing />} />
+            <Route path="/index" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register/admin" element={<RegisterAdmin />} />
             <Route path="/register/student" element={<RegisterStudent />} />
