@@ -4,7 +4,9 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { Search, Trash2 } from 'lucide-react';
 
 interface StudentProfile {
   id: string;
@@ -20,18 +22,31 @@ export default function AdminStudents() {
   const [students, setStudents] = useState<StudentProfile[]>([]);
   const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    const fetchStudents = async () => {
-      // Get student user_ids from user_roles
-      const { data: roles } = await supabase.from('user_roles').select('user_id').eq('role', 'student');
-      if (!roles || roles.length === 0) { setStudents([]); return; }
+  const fetchStudents = async () => {
+    const { data: roles } = await supabase.from('user_roles').select('user_id').eq('role', 'student');
+    if (!roles || roles.length === 0) { setStudents([]); return; }
 
-      const studentIds = roles.map(r => r.user_id);
-      const { data: profiles } = await supabase.from('profiles').select('*').in('user_id', studentIds);
-      if (profiles) setStudents(profiles);
-    };
+    const studentIds = roles.map(r => r.user_id);
+    const { data: profiles } = await supabase.from('profiles').select('*').in('user_id', studentIds);
+    if (profiles) setStudents(profiles);
+  };
+
+  useEffect(() => {
     fetchStudents();
   }, []);
+
+  const handleDelete = async (userId: string) => {
+    if (!window.confirm("Are you sure you want to delete this student?")) return;
+    
+    await supabase.from('user_roles').delete().eq('user_id', userId);
+    const { error } = await supabase.from('profiles').delete().eq('user_id', userId);
+    
+    if (error) toast.error("Error deleting student");
+    else {
+      toast.success("Student deleted successfully");
+      fetchStudents();
+    }
+  };
 
   const filtered = students.filter(p =>
     p.full_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -57,6 +72,7 @@ export default function AdminStudents() {
                   <TableHead>Email</TableHead>
                   <TableHead>Department</TableHead>
                   <TableHead>Phone</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -67,10 +83,15 @@ export default function AdminStudents() {
                     <TableCell>{p.email ?? '—'}</TableCell>
                     <TableCell>{p.department ?? '—'}</TableCell>
                     <TableCell>{p.phone ?? '—'}</TableCell>
+                    <TableCell>
+                      <Button size="sm" variant="destructive" onClick={() => handleDelete(p.user_id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
                 {filtered.length === 0 && (
-                  <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No students found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No students found</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>

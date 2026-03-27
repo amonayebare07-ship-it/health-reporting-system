@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { signUpStaff } from '@/lib/supabase-helpers';
 
 interface StaffProfile {
@@ -35,6 +35,19 @@ export default function AdminStaff() {
   };
 
   useEffect(() => { fetchStaff(); }, []);
+
+  const handleDelete = async (userId: string) => {
+    if (!window.confirm("Are you sure you want to delete this staff member?")) return;
+    
+    await supabase.from('user_roles').delete().eq('user_id', userId);
+    const { error } = await supabase.from('profiles').delete().eq('user_id', userId);
+    
+    if (error) toast.error("Error deleting staff member");
+    else {
+      toast.success("Staff deleted successfully");
+      fetchStaff();
+    }
+  };
 
   const handleCreateStaff = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,6 +104,7 @@ export default function AdminStaff() {
                   <TableHead>Email</TableHead>
                   <TableHead>Department</TableHead>
                   <TableHead>Phone</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -100,10 +114,15 @@ export default function AdminStaff() {
                     <TableCell>{s.email ?? '—'}</TableCell>
                     <TableCell>{s.department ?? '—'}</TableCell>
                     <TableCell>{s.phone ?? '—'}</TableCell>
+                    <TableCell>
+                      <Button size="sm" variant="destructive" onClick={() => handleDelete(s.user_id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
                 {staff.length === 0 && (
-                  <TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-8">No staff members</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No staff members</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>
