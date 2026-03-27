@@ -48,7 +48,7 @@ export const Navbar = () => {
 
         <div className="flex items-center gap-4">
           {!loading && user ? (
-            <Button onClick={() => navigate("/login")} variant="default" className="rounded-full px-6 transition-all hover:scale-105 active:scale-95 shadow-md">
+            <Button onClick={() => navigate("/index")} variant="default" className="rounded-full px-6 transition-all hover:scale-105 active:scale-95 shadow-md">
               Go to Dashboard
             </Button>
           ) : (
