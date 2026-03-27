@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# ONLINE STUDENT HEALTH REPORTING INFORMATION SYSTEM
 
-TODO: Document your project here
+This system provides an integrated platform for student health reporting and information management.
