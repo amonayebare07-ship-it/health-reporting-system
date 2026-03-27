@@ -18,9 +18,10 @@ import StaffAppointments from "./pages/staff/StaffAppointments";
 import StaffReports from "./pages/staff/StaffReports";
 import StaffConsultations from "./pages/staff/StaffConsultations";
 import StaffLabResults from "./pages/staff/StaffLabResults";
+import StaffProfile from "./pages/staff/StaffProfile";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminStudents from "./pages/admin/AdminStudents";
+import AdminPatients from "./pages/admin/AdminPatients";
 import AdminStaff from "./pages/admin/AdminStaff";
 import AdminReports from "./pages/admin/AdminReports";
 
@@ -28,7 +29,6 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentReportIllness from "./pages/student/StudentReportIllness";
 import StudentVisits from "./pages/student/StudentVisits";
 import StudentAppointments from "./pages/student/StudentAppointments";
-import StudentLabResults from "./pages/student/StudentLabResults";
 import StudentProfile from "./pages/student/StudentProfile";
 
 const queryClient = new QueryClient();
@@ -49,7 +49,7 @@ const App = () => (
 
             {/* Admin routes */}
             <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/students" element={<AdminStudents />} />
+            <Route path="/admin/patients" element={<AdminPatients />} />
             <Route path="/admin/staff" element={<AdminStaff />} />
             <Route path="/admin/reports" element={<AdminReports />} />
 
@@ -60,13 +60,13 @@ const App = () => (
             <Route path="/staff/reports" element={<StaffReports />} />
             <Route path="/staff/consultations" element={<StaffConsultations />} />
             <Route path="/staff/lab-results" element={<StaffLabResults />} />
+            <Route path="/staff/profile" element={<StaffProfile />} />
 
             {/* Student routes */}
             <Route path="/student" element={<StudentDashboard />} />
             <Route path="/student/report" element={<StudentReportIllness />} />
             <Route path="/student/visits" element={<StudentVisits />} />
             <Route path="/student/appointments" element={<StudentAppointments />} />
-            <Route path="/student/lab-results" element={<StudentLabResults />} />
             <Route path="/student/profile" element={<StudentProfile />} />
 
             <Route path="*" element={<NotFound />} />

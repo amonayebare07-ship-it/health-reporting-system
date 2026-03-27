@@ -18,7 +18,7 @@ interface StudentProfile {
   user_id: string;
 }
 
-export default function AdminStudents() {
+export default function AdminPatients() {
   const [students, setStudents] = useState<StudentProfile[]>([]);
   const [search, setSearch] = useState('');
 
@@ -57,10 +57,10 @@ export default function AdminStudents() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <h1 className="text-3xl font-display font-bold text-foreground">Students</h1>
+        <h1 className="text-3xl font-display font-bold text-foreground">Patients</h1>
         <div className="relative max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder="Search students..." className="pl-10" value={search} onChange={e => setSearch(e.target.value)} />
+          <Input placeholder="Search patients..." className="pl-10" value={search} onChange={e => setSearch(e.target.value)} />
         </div>
         <Card className="shadow-card">
           <CardContent className="p-0">
@@ -91,7 +91,7 @@ export default function AdminStudents() {
                   </TableRow>
                 ))}
                 {filtered.length === 0 && (
-                  <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No students found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No patients found</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>

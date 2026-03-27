@@ -16,7 +16,7 @@ interface NavItem {
 
 const adminNav: NavItem[] = [
   { label: 'Dashboard', path: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
-  { label: 'Students', path: '/admin/students', icon: <Users className="w-5 h-5" /> },
+  { label: 'Patients', path: '/admin/patients', icon: <Users className="w-5 h-5" /> },
   { label: 'Staff', path: '/admin/staff', icon: <UserCircle className="w-5 h-5" /> },
   { label: 'Illness Reports', path: '/admin/reports', icon: <FileText className="w-5 h-5" /> },
 ];
@@ -28,6 +28,7 @@ const staffNav: NavItem[] = [
   { label: 'Illness Reports', path: '/staff/reports', icon: <FileText className="w-5 h-5" /> },
   { label: 'Consultations', path: '/staff/consultations', icon: <Stethoscope className="w-5 h-5" /> },
   { label: 'Lab Results', path: '/staff/lab-results', icon: <FlaskConical className="w-5 h-5" /> },
+  { label: 'Profile', path: '/staff/profile', icon: <UserCircle className="w-5 h-5" /> },
 ];
 
 const studentNav: NavItem[] = [
@@ -35,7 +36,6 @@ const studentNav: NavItem[] = [
   { label: 'Report Illness', path: '/student/report', icon: <ClipboardPlus className="w-5 h-5" /> },
   { label: 'My Visits', path: '/student/visits', icon: <Stethoscope className="w-5 h-5" /> },
   { label: 'Appointments', path: '/student/appointments', icon: <Calendar className="w-5 h-5" /> },
-  { label: 'Lab Results', path: '/student/lab-results', icon: <FlaskConical className="w-5 h-5" /> },
   { label: 'Profile', path: '/student/profile', icon: <UserCircle className="w-5 h-5" /> },
 ];
 

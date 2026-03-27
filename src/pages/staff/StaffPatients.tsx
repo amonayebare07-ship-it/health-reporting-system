@@ -4,7 +4,9 @@ import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { Search, Trash2 } from 'lucide-react';
 
 interface Profile {
   id: string;
@@ -13,17 +15,34 @@ interface Profile {
   student_id: string | null;
   department: string | null;
   phone: string | null;
+  user_id: string;
 }
 
 export default function StaffPatients() {
   const [patients, setPatients] = useState<Profile[]>([]);
   const [search, setSearch] = useState('');
 
+  const fetchPatients = async () => {
+    const { data } = await supabase.from('profiles').select('*');
+    if (data) setPatients(data);
+  };
+
   useEffect(() => {
-    supabase.from('profiles').select('*').then(({ data }) => {
-      if (data) setPatients(data);
-    });
+    fetchPatients();
   }, []);
+
+  const handleDelete = async (userId: string) => {
+    if (!window.confirm("Are you sure you want to delete this patient record?")) return;
+    
+    await supabase.from('user_roles').delete().eq('user_id', userId);
+    const { error } = await supabase.from('profiles').delete().eq('user_id', userId);
+    
+    if (error) toast.error("Error deleting patient");
+    else {
+      toast.success("Patient deleted successfully");
+      fetchPatients();
+    }
+  };
 
   const filtered = patients.filter(p =>
     p.full_name.toLowerCase().includes(search.toLowerCase()) ||
@@ -48,6 +67,7 @@ export default function StaffPatients() {
                   <TableHead>Email</TableHead>
                   <TableHead>Department</TableHead>
                   <TableHead>Phone</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -58,10 +78,15 @@ export default function StaffPatients() {
                     <TableCell>{p.email ?? '—'}</TableCell>
                     <TableCell>{p.department ?? '—'}</TableCell>
                     <TableCell>{p.phone ?? '—'}</TableCell>
+                    <TableCell>
+                      <Button size="sm" variant="destructive" onClick={() => handleDelete(p.user_id)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
                 {filtered.length === 0 && (
-                  <TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-8">No patients found</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No patients found</TableCell></TableRow>
                 )}
               </TableBody>
             </Table>

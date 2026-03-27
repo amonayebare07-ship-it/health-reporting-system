@@ -33,9 +33,11 @@ export default function StaffReports() {
 
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [notes, setNotes] = useState('');
+  const [referral, setReferral] = useState('None');
 
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editForm, setEditForm] = useState({ symptoms: '', description: '', severity: '', status: '', staff_notes: '' });
+  const [editReferral, setEditReferral] = useState('None');
 
   const fetchReports = async () => {
     const { data } = await supabase.from('illness_reports').select('*').order('created_at', { ascending: false });
@@ -63,42 +65,63 @@ export default function StaffReports() {
   const openReviewDialog = (report: Report) => {
     setSelectedReport(report);
     setNotes(report.staff_notes || '');
+    setReferral('None');
     setReviewDialogOpen(true);
   };
 
   const reviewReport = async () => {
     if (!selectedReport || !user) return;
+    
+    let finalNotes = notes;
+    if (referral !== 'None') {
+      finalNotes = `[REFERRAL: ${referral}]\n\n${notes}`;
+    }
+    
     await supabase.from('illness_reports').update({
       status: 'reviewed',
-      staff_notes: notes,
+      staff_notes: finalNotes,
       reviewed_by: user.id
     }).eq('id', selectedReport.id);
     toast.success('Report reviewed');
     setReviewDialogOpen(false);
     setNotes('');
+    setReferral('None');
     fetchReports();
   };
 
   const openEditDialog = (report: Report) => {
     setSelectedReport(report);
+    let currentNotes = report.staff_notes || '';
+    let currReferral = 'None';
+    const match = currentNotes.match(/^\[REFERRAL:\s*(.*?)\]\n\n/);
+    if (match) {
+      currReferral = match[1];
+      currentNotes = currentNotes.replace(match[0], '');
+    }
+    setEditReferral(currReferral);
     setEditForm({
       symptoms: report.symptoms,
       description: report.description || '',
       severity: report.severity,
       status: report.status,
-      staff_notes: report.staff_notes || ''
+      staff_notes: currentNotes
     });
     setEditDialogOpen(true);
   };
 
   const handleEditSubmit = async () => {
     if (!selectedReport) return;
+    
+    const finalNotes = editReferral !== 'None' 
+      ? `[REFERRAL: ${editReferral}]\n\n${editForm.staff_notes}` 
+      : editForm.staff_notes;
+      
     const { error } = await supabase.from('illness_reports').update({
       symptoms: editForm.symptoms,
       description: editForm.description,
       severity: editForm.severity,
       status: editForm.status,
-      staff_notes: editForm.staff_notes
+      staff_notes: finalNotes
     }).eq('id', selectedReport.id);
     
     if (error) toast.error(error.message);
@@ -190,6 +213,16 @@ export default function StaffReports() {
                   </div>
                 )}
                 <div className="space-y-2">
+                  <Label>Required Referral (Optional)</Label>
+                  <select className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" value={referral} onChange={e => setReferral(e.target.value)}>
+                    <option value="None">None</option>
+                    <option value="Rugarama Hospital">Rugarama Hospital</option>
+                    <option value="Kabale Regional Referral Hospital">Kabale Regional Referral Hospital</option>
+                    <option value="Rushoroza Hospital">Rushoroza Hospital</option>
+                    <option value="Kamukira Health Centre IV">Kamukira Health Centre IV</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
                   <Label>Staff Notes</Label>
                   <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Add your review notes..." />
                 </div>
@@ -228,6 +261,16 @@ export default function StaffReports() {
                     <option value="reviewed">Reviewed</option>
                   </select>
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Required Referral (Optional)</Label>
+                <select className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" value={editReferral} onChange={e => setEditReferral(e.target.value)}>
+                  <option value="None">None</option>
+                  <option value="Rugarama Hospital">Rugarama Hospital</option>
+                  <option value="Kabale Regional Referral Hospital">Kabale Regional Referral Hospital</option>
+                  <option value="Rushoroza Hospital">Rushoroza Hospital</option>
+                  <option value="Kamukira Health Centre IV">Kamukira Health Centre IV</option>
+                </select>
               </div>
               <div className="space-y-2">
                 <Label>Staff Notes</Label>
