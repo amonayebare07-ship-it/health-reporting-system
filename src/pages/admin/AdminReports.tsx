@@ -199,7 +199,6 @@ export default function AdminReports() {
 
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <h1 className="text-3xl font-display font-bold text-foreground">All Illness Reports</h1>
-          <p className="text-red-500 font-bold">Reporting Tools Active</p>
           <div className="flex items-center gap-3">
             <Button onClick={handleDownloadCSV} className="flex items-center gap-2">
               <Download className="w-4 h-4" />
