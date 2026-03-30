@@ -70,7 +70,7 @@ export default function Login() {
                 <Heart className="w-7 h-7 text-primary-foreground" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-display text-center">Welcome back</CardTitle>
+            <CardTitle className="text-2xl font-display text-center">Welcome </CardTitle>
             <CardDescription className="text-center text-muted-foreground">
               Sign in to access the health reporting information system
             </CardDescription>

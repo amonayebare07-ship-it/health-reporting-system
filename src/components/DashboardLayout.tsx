@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import {
   Heart, LayoutDashboard, Users, Calendar, FileText,
-  FlaskConical, UserCircle, LogOut, ClipboardPlus, Stethoscope, Menu, X
+  UserCircle, LogOut, ClipboardPlus, Stethoscope, Menu, X
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -27,14 +27,13 @@ const staffNav: NavItem[] = [
   { label: 'Appointments', path: '/staff/appointments', icon: <Calendar className="w-5 h-5" /> },
   { label: 'Illness Reports', path: '/staff/reports', icon: <FileText className="w-5 h-5" /> },
   { label: 'Consultations', path: '/staff/consultations', icon: <Stethoscope className="w-5 h-5" /> },
-  { label: 'Lab Results', path: '/staff/lab-results', icon: <FlaskConical className="w-5 h-5" /> },
   { label: 'Profile', path: '/staff/profile', icon: <UserCircle className="w-5 h-5" /> },
 ];
 
 const studentNav: NavItem[] = [
   { label: 'Dashboard', path: '/student', icon: <LayoutDashboard className="w-5 h-5" /> },
   { label: 'Report Illness', path: '/student/report', icon: <ClipboardPlus className="w-5 h-5" /> },
-  { label: 'My Visits', path: '/student/visits', icon: <Stethoscope className="w-5 h-5" /> },
+  { label: 'My Records', path: '/student/visits', icon: <Stethoscope className="w-5 h-5" /> },
   { label: 'Appointments', path: '/student/appointments', icon: <Calendar className="w-5 h-5" /> },
   { label: 'Profile', path: '/student/profile', icon: <UserCircle className="w-5 h-5" /> },
 ];
@@ -60,7 +59,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <div className="w-9 h-9 rounded-lg gradient-primary flex items-center justify-center">
             <Heart className="w-5 h-5 text-primary-foreground" />
           </div>
-          <span className="font-display font-bold text-lg">CampusHealth</span>
+          <span className="font-display font-bold text-lg">Health Reporting System</span>
         </div>
         
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
@@ -110,7 +109,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <button onClick={() => setMobileOpen(true)}>
             <Menu className="w-6 h-6 text-foreground" />
           </button>
-          <span className="font-display font-bold text-foreground">CampusHealth</span>
+          <span className="font-display font-bold text-foreground">Health Reporting System</span>
           <div className="w-6" />
         </header>
 
