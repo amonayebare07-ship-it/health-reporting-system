@@ -1,13 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import DashboardLayout from '@/components/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, FileText, Calendar, Stethoscope, ShieldCheck } from 'lucide-react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, LineChart, Line, Legend
-} from 'recharts';
+import { Users, FileText, Calendar, Stethoscope, ShieldCheck, Download, FileDown, FileSpreadsheet } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 import { format, subDays, isSameDay } from 'date-fns';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { toast } from 'sonner';
 
 const COLORS = ['#0ea5e9', '#8b5cf6', '#f43f5e', '#10b981', '#f59e0b'];
 
@@ -16,6 +25,8 @@ export default function AdminDashboard() {
   const [roleData, setRoleData] = useState<any[]>([]);
   const [severityData, setSeverityData] = useState<any[]>([]);
   const [activityData, setActivityData] = useState<any[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
+  const dashboardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -79,6 +90,92 @@ export default function AdminDashboard() {
     fetchStats();
   }, []);
 
+  const handleDownloadPDF = async () => {
+    if (!dashboardRef.current) return;
+    
+    setIsExporting(true);
+    const toastId = toast.loading('Preparing professional report...');
+    
+    try {
+      // Capture the dashboard content
+      const canvas = await html2canvas(dashboardRef.current, {
+        scale: 2, // Higher quality
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#f9fafb' // Matches bg-slate-50
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgProps = pdf.getImageProperties(imgData);
+      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      
+      // Add a header
+      pdf.setFontSize(22);
+      pdf.setTextColor(14, 165, 233); // Primary color
+      pdf.text('System Health Analysis Report', 15, 20);
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(100);
+      pdf.text(`Generated on ${format(new Date(), 'PPPP p')}`, 15, 28);
+      
+      // Add the captured dashboard image
+      pdf.addImage(imgData, 'PNG', 0, 35, pdfWidth, imgHeight);
+      
+      pdf.save(`Health_System_Dashboard_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+      toast.success('Report downloaded successfully!', { id: toastId });
+    } catch (error) {
+      console.error('Export failed:', error);
+      toast.error('Failed to generate report. Please try again.', { id: toastId });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleDownloadCSV = () => {
+    const toastId = toast.loading('Preparing data export...');
+    try {
+      // Create CSV content
+      const rows = [
+        ['Metric', 'Value'],
+        ['Total Students', stats.students],
+        ['Staff Members', stats.staff],
+        ['Illness Reports', stats.reports],
+        ['Appointments', stats.appointments],
+        ['Consultations', stats.consultations],
+        [],
+        ['System Activity (Last 7 Days)'],
+        ['Date', 'Reports', 'Appointments'],
+        ...activityData.map(d => [d.date, d.Reports, d.Appointments]),
+        [],
+        ['Illness Severity'],
+        ['Severity', 'Count'],
+        ...severityData.map(d => [d.severity, d.count])
+      ];
+
+      const csvContent = rows.map(e => e.join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Health_System_Data_${format(new Date(), 'yyyy-MM-dd')}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.success('Data exported successfully!', { id: toastId });
+    } catch (error) {
+      toast.error('Data export failed.', { id: toastId });
+    }
+  };
+
   const cards = [
     { title: 'Students', value: stats.students, icon: <Users className="w-6 h-6" />, color: 'text-primary' },
     { title: 'Staff Members', value: stats.staff, icon: <ShieldCheck className="w-6 h-6" />, color: 'text-accent' },
@@ -89,10 +186,33 @@ export default function AdminDashboard() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 animate-fade-in">
-        <div>
-          <h1 className="text-3xl font-display font-bold text-foreground">Admin Dashboard</h1>
-          <p className="text-muted-foreground mt-1">System overview and management metrics</p>
+      <div className="space-y-6 animate-fade-in" ref={dashboardRef}>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-display font-bold text-foreground">Admin Dashboard</h1>
+            <p className="text-muted-foreground mt-1">System overview and management metrics</p>
+          </div>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button disabled={isExporting} variant="outline" className="flex items-center gap-2">
+                <Download className="w-4 h-4" />
+                {isExporting ? 'Exporting...' : 'Export Results'}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Export Options</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleDownloadPDF} className="cursor-pointer">
+                <FileDown className="w-4 h-4 mr-2" />
+                <span>PDF Report (with Charts)</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDownloadCSV} className="cursor-pointer">
+                <FileSpreadsheet className="w-4 h-4 mr-2" />
+                <span>Raw Data (CSV)</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Top Metric Cards */}
