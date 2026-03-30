@@ -17,9 +17,9 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    
+
     if (error) {
       toast.error(error.message);
     } else {
@@ -38,7 +38,8 @@ export default function Login() {
             <Heart className="w-10 h-10 text-primary-foreground" />
           </div>
           <h1 className="text-4xl font-bold font-display text-sidebar-foreground">
-            Campus Health Management System
+            ONLINE STUDENT HEALTH REPORTING INFORMATION SYSTEM
+
           </h1>
           <p className="text-lg text-sidebar-foreground/70">
             Streamlining student healthcare with secure digital records, easy appointment booking, and remote illness reporting.
@@ -71,7 +72,7 @@ export default function Login() {
             </div>
             <CardTitle className="text-2xl font-display text-center">Welcome back</CardTitle>
             <CardDescription className="text-center text-muted-foreground">
-              Sign in to access the health management system
+              Sign in to access the health reporting information system
             </CardDescription>
           </CardHeader>
           <CardContent>
