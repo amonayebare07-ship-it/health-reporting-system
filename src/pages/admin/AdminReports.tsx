@@ -197,14 +197,15 @@ export default function AdminReports() {
           <p>Illness Reports Summary - {new Date().toLocaleDateString()}</p>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <h1 className="text-3xl font-display font-bold text-foreground">All Illness Reports</h1>
-          <div className="flex items-center gap-2 no-print">
-            <Button variant="outline" onClick={handleDownloadCSV} className="flex items-center gap-2">
+          <p className="text-red-500 font-bold">Reporting Tools Active</p>
+          <div className="flex items-center gap-3">
+            <Button onClick={handleDownloadCSV} className="flex items-center gap-2">
               <Download className="w-4 h-4" />
               Download CSV
             </Button>
-            <Button variant="outline" onClick={handlePrint} className="flex items-center gap-2">
+            <Button onClick={handlePrint} className="flex items-center gap-2">
               <Printer className="w-4 h-4" />
               Print Report
             </Button>

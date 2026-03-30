@@ -165,8 +165,6 @@
   nav, 
   header, 
   footer, 
-  button, 
-  [role="button"],
   .no-print {
     display: none !important;
   }
