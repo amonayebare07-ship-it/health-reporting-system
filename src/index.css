@@ -152,3 +152,74 @@
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
   }
 }
+
+/* Print Styles */
+@media print {
+  @page {
+    size: landscape;
+    margin: 1cm;
+  }
+
+  /* Hide elements */
+  aside, 
+  nav, 
+  header, 
+  footer, 
+  button, 
+  [role="button"],
+  .no-print {
+    display: none !important;
+  }
+
+  /* Reset layout */
+  .lg\:ml-64 {
+    margin-left: 0 !important;
+  }
+
+  main {
+    padding: 0 !important;
+    animation: none !important;
+  }
+
+  .shadow-card, 
+  .shadow-elevated {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  /* Tables */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th, td {
+    border: 1px solid #e5e7eb !important;
+    padding: 8px !important;
+    font-size: 10pt !important;
+  }
+
+  /* Print Header (shown only in print) */
+  .print-header {
+    display: block !important;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 2px solid #111827;
+    padding-bottom: 10px;
+  }
+
+  .print-header h1 {
+    font-size: 20pt;
+    margin: 0;
+  }
+
+  .print-header p {
+    font-size: 10pt;
+    color: #4b5563;
+    margin: 5px 0 0 0;
+  }
+}
+
+.print-header {
+  display: none;
+}

@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { Trash2, PenSquare } from 'lucide-react';
+import { Trash2, PenSquare, Printer, Download } from 'lucide-react';
 
 interface Report {
   id: string;
@@ -155,10 +155,61 @@ export default function AdminReports() {
     return 'bg-warning/10 text-warning border-warning/20';
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleDownloadCSV = () => {
+    if (reports.length === 0) {
+      toast.error('No reports to download');
+      return;
+    }
+
+    const headers = ['Date', 'Student', 'Symptoms', 'Severity', 'Status', 'Staff Notes'];
+    const csvContent = [
+      headers.join(','),
+      ...reports.map(r => [
+        r.onset_date,
+        `"${r.student_name}"`,
+        `"${r.symptoms.replace(/"/g, '""')}"`,
+        r.severity,
+        r.status,
+        `"${(r.staff_notes || '').replace(/"/g, '""')}"`
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `illness_reports_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        <h1 className="text-3xl font-display font-bold text-foreground">All Illness Reports</h1>
+        <div className="print-header">
+          <h1>Health Reporting System</h1>
+          <p>Illness Reports Summary - {new Date().toLocaleDateString()}</p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h1 className="text-3xl font-display font-bold text-foreground">All Illness Reports</h1>
+          <div className="flex items-center gap-2 no-print">
+            <Button variant="outline" onClick={handleDownloadCSV} className="flex items-center gap-2">
+              <Download className="w-4 h-4" />
+              Download CSV
+            </Button>
+            <Button variant="outline" onClick={handlePrint} className="flex items-center gap-2">
+              <Printer className="w-4 h-4" />
+              Print Report
+            </Button>
+          </div>
+        </div>
         <Card className="shadow-card">
           <CardContent className="p-0">
             <Table>
